@@ -6,7 +6,7 @@ using namespace std;
 
 void easy_malloc(process* processes, int num);
 void buddy_manager(process* processes, int num);
-void* my_malloc(int size);
+void* my_malloc(memoryNode*, int size);
 void my_free(void *space);
 
 int main(){
@@ -15,8 +15,6 @@ int main(){
 	generateProcesses(processes, num);	
 	printProcesses(processes,num);
 	easy_malloc(processes, num);
-
-	
 }
 
 void easy_malloc(process* processes, int num){
@@ -46,6 +44,15 @@ void easy_malloc(process* processes, int num){
 
 void buddy_manager(process* processes, int num){
 	
-	memoryNode *root = malloc(10000000);
+	memoryNode *root;
+	root->start = malloc(10000000);
 
+}
+
+void* my_malloc (memoryNode *root, int size) {
+	
+}
+
+void my_free (void* space) {
+	
 }

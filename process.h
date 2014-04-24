@@ -9,6 +9,7 @@ struct process{
 }; 
 
 struct memoryNode{
+	void* start;
 	int max_size;
 	memoryNode* left;
 	memoryNode* right;
