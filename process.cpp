@@ -3,8 +3,8 @@
 #include <stdlib.h>     
 #include <time.h>
 #include "process.h"
-using namespace std;
 
+using namespace std;
 // Given a min value, max value, a mean and the number of elements, generate a pseudo normal set of data. 
 int* genNormalData(int mean, int min, int max, int numElements){
 
@@ -53,6 +53,29 @@ int getAverage(int* array, int length){
 	}
 
 	return average/length;
+}
+
+void generateProcesses(process* processes, int num){
+	int *cycles = new int[num];
+	int *memory = new int[num];
+	cycles = genNormalData(2500000, 1, 5000000, num);
+	memory = genNormalData(150, .25, 550, num);
+	
+	for(int i = 0; i < num; i++){
+		processes[i].id = i;
+		processes[i].cycles = cycles[i];
+		processes[i].memory = memory[i];
+	}
+}
+
+void printProcesses(process* processes, int num){
+	//int memSum = 0;
+	for(int i = 0; i < num; i++){
+		cout << processes[i].id << " " << processes[i].cycles << " " << processes[i].memory << endl;
+		//memSum += processes[i].memory;
+	}
+
+	//cout << "Sum is: " << memSum << endl;
 }
 
 
