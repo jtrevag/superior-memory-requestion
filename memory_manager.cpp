@@ -44,7 +44,7 @@ void easy_malloc(process* processes, int num){
 }
 
 void easy_queue () {
-	
+	wut;
 }
 
 void buddy_manager(process* processes, int num){
