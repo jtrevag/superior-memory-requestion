@@ -5,6 +5,7 @@
 using namespace std;
 
 void easy_malloc(process* processes, int num);
+void easy_queue();
 void buddy_manager(process* processes, int num);
 void* my_malloc(memoryNode*, int size);
 void my_free(void *space);
@@ -40,6 +41,10 @@ void easy_malloc(process* processes, int num){
 		}
 		i++;
 	}
+}
+
+void easy_queue () {
+	
 }
 
 void buddy_manager(process* processes, int num){
