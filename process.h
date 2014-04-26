@@ -5,7 +5,7 @@ struct process{
 		int id;
 		int cycles;
 		int memory;
-		void* space;
+		char* space;
 }; 
 
 struct memoryNode{
