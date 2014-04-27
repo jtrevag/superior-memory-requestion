@@ -59,7 +59,7 @@ void generateProcesses(process* processes, int num){
 	int *cycles = new int[num];
 	int *memory = new int[num];
 	cycles = genNormalData(2500000, 1, 5000000, num);
-	memory = genNormalData(150, .25, 550, num);
+	memory = genNormalData(100, .25, 300, num); //This number is in kilobytes.
 	
 	for(int i = 0; i < num; i++){
 		processes[i].id = i;
@@ -69,13 +69,13 @@ void generateProcesses(process* processes, int num){
 }
 
 void printProcesses(process* processes, int num){
-	//int memSum = 0;
+	int memSum = 0;
 	for(int i = 0; i < num; i++){
 		cout << processes[i].id << " " << processes[i].cycles << " " << processes[i].memory << endl;
-		//memSum += processes[i].memory;
+		memSum += processes[i].memory;
 	}
 
-	//cout << "Sum is: " << memSum << endl;
+	cout << "Sum is: " << memSum << endl;
 }
 
 
