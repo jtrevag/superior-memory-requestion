@@ -1,7 +1,8 @@
 #include <iostream>
 #include <stdlib.h> 
 #include <stdio.h>
-#include <memory>
+#include <time.h>
+#include <queue>
 #include "process.h"
 
 
@@ -11,18 +12,23 @@ void easy_malloc(process* processes, int num);
 void buddy_manager(memoryNode* root, process* processes, int num);
 char* my_malloc(memoryNode* root, int size);
 char* my_free(memoryNode* root, char* space);
-
-
-int first = 1;
+void easy_queue(process* processes, int num);
 
 int main(){
+	clock_t t;
 	int num = 50;
 	process processes[num];
 	generateProcesses(processes, num);	
-	printProcesses(processes,num);
-	//easy_malloc(processes, num);
-	memoryNode *root = new memoryNode((char*)malloc(10240000), 10240000, NULL, NULL, 0);
-	buddy_manager(root, processes, num);
+	
+	t = clock();
+	easy_malloc(processes, num);
+	t = clock() - t;
+	cout << "easy_malloc time to completion: " << (float) t / CLOCKS_PER_SEC << " seconds." <<  endl;
+	
+	t = clock();
+	easy_queue(processes, num);
+	t = clock() - t;
+	cout << "easy_queue time to completion: " << (float) t / CLOCKS_PER_SEC << " seconds." <<  endl;
 }
 
 void easy_malloc(process* processes, int num){
@@ -129,6 +135,51 @@ char* my_free(memoryNode* root, char* space) {
 		}
 	}
 } 
+
+void easy_queue (process* processes, int num) {
+	int i = 0, count = 0, runningCount = 0, removed = 0, j = 0, maxMem = 5000, curMem = 0;
+	process running[num];
+	queue<process> procQueue;
+	
+	while(removed < num){
+		if(i % 50 == 0 && count< num){
+			if (curMem + processes[count].memory > maxMem) {
+				//cout << "Queueing process: " << count << endl;
+				procQueue.push(processes[count]);
+			}
+			else {	
+				//cout << "Adding process: " << count << endl;
+				running[runningCount] = processes[count];
+				running[runningCount].space = (char*) malloc(running[runningCount].memory * 1000);
+				curMem += running[runningCount].memory;
+				runningCount++;
+			}
+			count++;
+		}
+
+		for(j = 0; j < runningCount; j++){
+			if(running[j].cycles >= 0){
+				running[j].cycles--;	
+			}
+			if(running[j].cycles == 0){
+				//cout << "Removing process: " << j << endl;
+				free(running[j].space);
+				curMem -= running[j].memory;
+				removed++;
+			}
+		}
+		
+		if (!procQueue.empty() && maxMem - curMem >= procQueue.front().memory) {
+			running[runningCount] = procQueue.front();
+			procQueue.pop();
+			//cout << "Dequeueing and adding process." << endl;
+			running[runningCount].space = (char*) malloc(running[runningCount].memory * 1000);
+			curMem += running[runningCount].memory;
+			runningCount++;
+		}
+		i++;
+	}
+}
 		
 
 	
