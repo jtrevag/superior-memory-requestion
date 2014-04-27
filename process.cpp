@@ -59,7 +59,11 @@ void generateProcesses(process* processes, int num){
 	int *cycles = new int[num];
 	int *memory = new int[num];
 	cycles = genNormalData(2500000, 1, 5000000, num);
+<<<<<<< HEAD
 	memory = genNormalData(100, .25, 300, num); //This number is in kilobytes.
+=======
+	memory = genNormalData(50, .25, 300, num); //This number is in kilobytes.
+>>>>>>> ab08f643cd092fcb2e19b981e6debc04a657bee2
 	
 	for(int i = 0; i < num; i++){
 		processes[i].id = i;
