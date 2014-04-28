@@ -78,4 +78,12 @@ void printProcesses(process* processes, int num){
 	cout << "Sum is: " << memSum << endl;
 }
 
+int getTotalMemoryNeeded(process* processes, int num){
+	int totalMem = 0;
+	for(int i = 0; i < num; i++){
+		totalMem += processes[i].memory;
+	}
+	return totalMem;
+}
+
 

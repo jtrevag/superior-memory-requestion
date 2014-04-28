@@ -5,15 +5,17 @@ struct process{
 		int id;
 		int cycles;
 		int memory;
-		char* space;
+		void* space;
+
 }; 
 
 struct memoryNode{
 	char* start;
-	int max_size;
+	size_t max_size;
 	memoryNode* left;
 	memoryNode* right;
 	int occupied;
+
 
 	memoryNode()
 	{
@@ -38,5 +40,6 @@ int getAverage(int*, int);
 int* genNormalData(int, int, int, int);
 void generateProcesses(process*, int);
 void printProcesses(process*, int);
+int getTotalMemoryNeeded(process*, int);
 
 #endif
