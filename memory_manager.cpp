@@ -10,6 +10,7 @@ using namespace std;
 
 void easy_malloc(process* processes, int num);
 void buddy_manager(memoryNode* root, process* processes, int num);
+void buddy_queue(memoryNode* root, process* processes, int num);
 char* my_malloc(memoryNode* root, int size);
 char* my_free(memoryNode* root, char* space);
 void easy_queue(process* processes, int num);
@@ -20,22 +21,28 @@ int main(){
 	process processes[num];
 	generateProcesses(processes, num);	
 	
-	t = clock();
-	easy_malloc(processes, num);
-	t = clock() - t;
-	cout << "easy_malloc time to completion: " << (float) t / CLOCKS_PER_SEC << " seconds." <<  endl;
+	// t = clock();
+	// easy_malloc(processes, num);
+	// t = clock() - t;
+	// cout << "easy_malloc time to completion: " << (float) t / CLOCKS_PER_SEC << " seconds." <<  endl;
 	
-	t = clock();
-	easy_queue(processes, num);
-	t = clock() - t;
-	cout << "easy_queue time to completion: " << (float) t / CLOCKS_PER_SEC << " seconds." <<  endl;
+	// t = clock();
+	// easy_queue(processes, num);
+	// t = clock() - t;
+	// cout << "easy_queue time to completion: " << (float) t / CLOCKS_PER_SEC << " seconds." <<  endl;
 
-	memoryNode *root = new memoryNode((char*)malloc(10240000), 10240000, NULL, NULL, 0);
+	// memoryNode *root = new memoryNode((char*)malloc(10240000), 10240000, NULL, NULL, 0);
+	// t = clock();
+ 	// buddy_manager(root, processes, num);
+ 	// t = clock() - t;
+ 	// cout << "default buddy_manger time to completion: " << (float) t / CLOCKS_PER_SEC << " seconds." <<  endl;
+
+	memoryNode *root = new memoryNode((char*)malloc(5120000), 5120000, NULL, NULL, 0);
 	t = clock();
- 	buddy_manager(root, processes, num);
+ 	buddy_queue(root, processes, num);
  	t = clock() - t;
  	cout << "default buddy_manger time to completion: " << (float) t / CLOCKS_PER_SEC << " seconds." <<  endl;
-
+	
 }
 
 void easy_malloc(process* processes, int num){
@@ -195,17 +202,26 @@ void buddy_queue (memoryNode* root, process* processes, int num) {
 	
 	while(removed < num){
 		if(i % 50 == 0 && count< num){
-			if (curMem + processes[count].memory > maxMem) {
-				//cout << "Queueing process: " << count << endl;
-				procQueue.push(processes[count]);
-			}
-			else {	
-				//cout << "Adding process: " << count << endl;
-				running[runningCount] = processes[count];
-				running[runningCount].space = (char*) malloc(running[runningCount].memory * 1000);
-				curMem += running[runningCount].memory;
-				runningCount++;
-			}
+			// if (curMem + processes[count].memory > maxMem) {
+				// cout << "Queueing process: " << count << endl;
+				// procQueue.push(processes[count]);
+			// }
+			//else {	
+				cout << "Adding process: " << count << endl;
+				processes[count].space = (char*) my_malloc(root, processes[count].memory * 1000);
+				if (processes[count].space == NULL) {
+					procQueue.push(processes[count]);
+					
+				}
+				else {
+					running[runningCount] = processes[count];
+					if (count > 0)
+						running[runningCount].space += 8;
+					cout << running[runningCount].space << endl;
+					curMem += running[runningCount].memory;
+					runningCount++;
+				}
+			//}
 			count++;
 		}
 
@@ -214,18 +230,18 @@ void buddy_queue (memoryNode* root, process* processes, int num) {
 				running[j].cycles--;	
 			}
 			if(running[j].cycles == 0){
-				//cout << "Removing process: " << j << endl;
-				free(running[j].space);
+				cout << "Removing process: " << j << endl;
+				my_free(root, running[j].space);
 				curMem -= running[j].memory;
 				removed++;
 			}
 		}
 		
-		if (!procQueue.empty() && maxMem - curMem >= procQueue.front().memory) {
+		if (!procQueue.empty()) {
 			running[runningCount] = procQueue.front();
 			procQueue.pop();
-			//cout << "Dequeueing and adding process." << endl;
-			running[runningCount].space = (char*) malloc(running[runningCount].memory * 1000);
+			cout << "Dequeueing and adding process." << endl;
+			running[runningCount].space = (char*) my_malloc(root, running[runningCount].memory * 1000);
 			curMem += running[runningCount].memory;
 			runningCount++;
 		}
