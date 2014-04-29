@@ -61,20 +61,18 @@ int main(){
 void basic_malloc(process* processes, int num){
 	int i = 0, count = 0, removed = 0, j = 0;
 	process running[num];
-	while(removed < num){
-		if(i % 50 == 0 && count<50){
-			//cout << "Adding process: " << count << endl;
+	while(removed < num){ //Loops until all processes have completed and left the system. 
+		if(i % 50 == 0 && count<50){ //Adds a process to the running array. 
 			running[count] = processes[count];
 			running[count].space = (char*) malloc(running[count].memory * 1000);
 			count++;
 		}
 
-		for(j = 0; j<count; j++){
+		for(j = 0; j<count; j++){ //Decrement cycles for running processes
 			if(running[j].cycles >= 0){
 				running[j].cycles--;	
 			}
-			if(running[j].cycles == 0){
-				//cout << "Removing process: " << j << endl;
+			if(running[j].cycles == 0){ //Removes completed processes. 
 				free(running[j].space);
 				removed++;
 			}
@@ -89,9 +87,8 @@ void buddy_manager(memoryNode* root, process* processes, int num){
 	int i = 0, count = 0, removed = 0, j = 0;
 	process running[num];
 	int totalSize = 0;
-	while(removed < num){ //removed < num
-		if(i % 50 == 0 && count<num){ //count < num
-			//cout << "Adding process: " << count << endl;
+	while(removed < num){
+		if(i % 50 == 0 && count<num){
 			running[count] = processes[count];
 			running[count].space = my_malloc(root, running[count].memory * 1000);
 			totalSize += running[count].memory * 1000;
@@ -102,7 +99,6 @@ void buddy_manager(memoryNode* root, process* processes, int num){
 				running[j].cycles--;	
 			}
 			if(running[j].cycles == 0){
-				//cout << "Removing process: " << j << endl;
 				my_free(root, running[j].space);
 				removed++;
 			}
@@ -111,7 +107,9 @@ void buddy_manager(memoryNode* root, process* processes, int num){
 	}
 }
 
-//TODO: CHAD DOCUMENT THIS
+//basic_queue follows the basic structure of the other functions, with the exception that there is a queue added.
+//If the process would cause curMem to exceed maxMem, it is put on procQueue instead of the running[] array. 
+//After process cycles have been decremented and completed processes removed, we check to see if a process can be dequeued, and add it to running[] if we can. 
 void basic_queue (process* processes, int num, int maxMem) {
 	int i = 0, count = 0, runningCount = 0, removed = 0, j = 0, curMem = 0;
 	process running[num];
@@ -119,12 +117,10 @@ void basic_queue (process* processes, int num, int maxMem) {
 	
 	while(removed < num){
 		if(i % 50 == 0 && count< num){
-			if (curMem + processes[count].memory > maxMem) {
-				//cout << "Queueing process: " << count << endl;
+			if (curMem + processes[count].memory > maxMem) { //Queue a process if there is no room. 
 				procQueue.push(processes[count]);
 			}
 			else {	
-				//cout << "Adding process: " << count << endl;
 				running[runningCount] = processes[count];
 				running[runningCount].space = (char*) malloc(running[runningCount].memory * 1000);
 				curMem += running[runningCount].memory;
@@ -133,22 +129,20 @@ void basic_queue (process* processes, int num, int maxMem) {
 			count++;
 		}
 
-		for(j = 0; j < runningCount; j++){
+		for(j = 0; j < runningCount; j++){ //Decrement cycles for each running process
 			if(running[j].cycles >= 0){
 				running[j].cycles--;	
 			}
-			if(running[j].cycles == 0){
-				//cout << "Removing process: " << j << endl;
+			if(running[j].cycles == 0){ //Remove process from running[] if it is finished. 
 				free(running[j].space);
 				curMem -= running[j].memory;
 				removed++;
 			}
 		}
 		
-		if (!procQueue.empty() && maxMem - curMem >= procQueue.front().memory) {
+		if (!procQueue.empty() && maxMem - curMem >= procQueue.front().memory) { //Check to see if we can dequeue and add to running[]
 			running[runningCount] = procQueue.front();
 			procQueue.pop();
-			//cout << "Dequeueing and adding process." << endl;
 			running[runningCount].space = (char*) malloc(running[runningCount].memory * 1000);
 			curMem += running[runningCount].memory;
 			runningCount++;
@@ -156,7 +150,9 @@ void basic_queue (process* processes, int num, int maxMem) {
 		i++;
 	}
 }
-		
+
+//Similar to basic_queue, but adds a process to a queue if the my_malloc call fails
+//The my_malloc call will fail if a level in the binary tree runs out of nodes.  		
 void buddy_queue (memoryNode* root, process* processes, int num, int maxMem) {
 	int i = 0, count = 0, runningCount = 0, removed = 0, j = 0, curMem = 0, checkQueue = 0;
 	process running[num];
@@ -165,12 +161,10 @@ void buddy_queue (memoryNode* root, process* processes, int num, int maxMem) {
 	while(removed < num){
 		if(i % 50 == 0 && count< num){
 			if (curMem + processes[count].memory > maxMem) {
-				//cout << "Queueing process: " << count << endl;
 				procQueue.push(processes[count]);
 				checkQueue++;
 			}
 			else {
-				//cout << "Adding process: " << count << endl;
 				running[runningCount] = processes[count];
 				curMem += running[runningCount].memory;
 				runningCount++;
@@ -183,7 +177,6 @@ void buddy_queue (memoryNode* root, process* processes, int num, int maxMem) {
 				running[j].cycles--;	
 			}
 			if(running[j].cycles == 0){
-				//cout << "Removing process: " << j << endl;
 				my_free(root, running[j].space);
 				curMem -= running[j].memory;
 				removed++;
@@ -195,8 +188,7 @@ void buddy_queue (memoryNode* root, process* processes, int num, int maxMem) {
 				if((maxMem - curMem) >= procQueue.top().memory){
 					running[runningCount] = procQueue.top();
 					running[runningCount].space = (char*) my_malloc(root, running[runningCount].memory * 1000);
-					if(running[runningCount].space != NULL){
-						//cout << "Dequeueing and adding process: " << runningCount << endl;
+					if(running[runningCount].space != NULL){ //Only dequeues the process if the my_malloc call is successful. 
 						procQueue.pop();
 						curMem += running[runningCount].memory;
 						runningCount++;
