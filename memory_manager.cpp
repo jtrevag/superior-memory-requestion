@@ -166,6 +166,7 @@ void buddy_queue (memoryNode* root, process* processes, int num, int maxMem) {
 			}
 			else {
 				running[runningCount] = processes[count];
+				running[count].space = my_malloc(root, running[count].memory * 1000);
 				curMem += running[runningCount].memory;
 				runningCount++;
 			}
